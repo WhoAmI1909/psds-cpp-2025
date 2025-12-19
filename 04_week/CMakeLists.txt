@@ -11,5 +11,5 @@ set(TASKS_DIR tasks)
 
 # Создать исполняемый файл для каждого примера
 if (BUILD_EXAMPLES_04_WEEK)
-#    add_example(struct_examples ${EXAMPLES_DIR}/struct_examples.cpp)
+#    add_example(class_examples ${EXAMPLES_DIR}/class_examples.cpp)
 endif()
