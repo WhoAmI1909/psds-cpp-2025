@@ -374,7 +374,7 @@ protected:
 };
 
 TEST_F(QueuePerformanceTest, CapacityConstructor) {
-    constexpr int LARGE_SIZE = 10'000'000;
+    constexpr int LARGE_SIZE = 50'000'000;
     Queue q_with_reserve(LARGE_SIZE);
 
     long long time_with_reserve = MeasureTime([&q_with_reserve]() {
