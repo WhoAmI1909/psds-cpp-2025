@@ -250,12 +250,10 @@ TEST(StringViewTest, ObservesOriginalString) {
 }
 
 TEST(StringViewTest, WorksWithStringLiterals) {
-    const char* s1 = "Hello";
-    StringView sv1 = s1;
+    StringView sv1 = "Hello";
     EXPECT_EQ(sv1.ToString(), "Hello");
 
-    const char* s2 = "World";
-    StringView sv2(s2);
+    StringView sv2("World");
     EXPECT_EQ(sv2.ToString(), "World");
 
     std::string result = sv1.ToString() + ", " + sv2.ToString();
@@ -299,8 +297,7 @@ TEST(StringViewTest, MemorySafety) {
     StringView sv2(temp);
     EXPECT_EQ(sv2.ToString(), "Temporary");
 
-    std::string hw("Hello, World!");
-    StringView sv3(hw);
+    StringView sv3("Hello, World!");
     StringView sv4 = sv3.Substr(7);
     StringView sv5 = sv4.Substr(0, 5);
     EXPECT_EQ(sv5.ToString(), "World");
