@@ -6,57 +6,43 @@ class Tracer {
     std::string name;   // name of the object
 
 public:
-    static int counter;         // number of created objects
-    static int default_ctor;    // number of calls to default constructor
-    static int str_ctor;        // number of calls to constructor with string argument
-    static int copy_ctor;       // number of calls to copy constructor
-    static int move_ctor;       // number of calls to move constructor
-    static int copy_assign;     // number of calls to copy assignment operator
-    static int move_assign;     // number of calls to move assignment operator
-    static int dtor;            // number of calls to destructor
-    static int alive;           // number of currently alive objects
+    static size_t count;         // number of created objects
+    static size_t default_ctor;    // number of calls to default constructor
+    static size_t str_ctor;        // number of calls to constructor with string argument
+    static size_t copy_ctor;       // number of calls to copy constructor
+    static size_t move_ctor;       // number of calls to move constructor
+    static size_t copy_assign;     // number of calls to copy assignment operator
+    static size_t move_assign;     // number of calls to move assignment operator
+    static size_t dtor;            // number of calls to destructor
+    static size_t alive;           // number of currently alive objects
 
-    void static ResetStats(){} // resets all static counters to zero
-    Tracer() {} // Default constructor
-    Tracer(const std::string& name) {}  // Constructor with string argument
-    Tracer(const Tracer& other) {}  // Copy constructor
-    Tracer(Tracer&& other) noexcept {}  // Move constructor
-    Tracer& operator=(const Tracer& other) {
-        copy_assign++;
-        if(this != &other) {
-            name = other.name;
-        }
-        return *this;
-    }
-    Tracer& operator=(const Tracer&& other) noexcept {
-        move_assign++;
-        if(this != &other) {
-            name = std::move(other.name);
-            // Дописать очистку полей. Объект должен быть консистентным.
-        }
-        return *this;
-    }
-    ~Tracer() {}  // Destructor
+    void static ResetStats(); // resets all static counters to zero
+    Tracer(); // Default constructor
+    Tracer(const std::string&);  // Constructor with string argument
+    Tracer(const Tracer&);  // Copy constructor
+    Tracer(Tracer&&) noexcept;  // Move constructor
+    Tracer& operator=(const Tracer&);
+    Tracer& operator=(Tracer&&) noexcept;
+    ~Tracer();  // Destructor
     // Methods
-    int Id(){}  // returns the id of the object
-    const std::string& Name(){} // returns the linked name of the object
-    const char* Data(){} // returns the linked name of the object
+    int Id() const noexcept;  // returns the id of the object
+    const std::string& Name() const noexcept; // returns the linked name of the object
+    const char* Data() const noexcept; // returns the linked name of the object
 };
 
 // Static member initialization
-int Tracer::counter = 0;
-int Tracer::default_ctor = 0;
-int Tracer::str_ctor = 0;
-int Tracer::copy_ctor = 0;
-int Tracer::move_ctor = 0;
-int Tracer::copy_assign = 0;
-int Tracer::move_assign = 0;
-int Tracer::dtor = 0;
-int Tracer::alive = 0;
+size_t Tracer::count = 0;
+size_t Tracer::default_ctor = 0;
+size_t Tracer::str_ctor = 0;
+size_t Tracer::copy_ctor = 0;
+size_t Tracer::move_ctor = 0;
+size_t Tracer::copy_assign = 0;
+size_t Tracer::move_assign = 0;
+size_t Tracer::dtor = 0;
+size_t Tracer::alive = 0;
 
 // Reset counters
 void Tracer::ResetStats() {
-    counter = 0;
     default_ctor = 0;
     str_ctor = 0;
     copy_ctor = 0;
@@ -65,50 +51,78 @@ void Tracer::ResetStats() {
     move_assign = 0;
     dtor = 0;
     alive = 0;
+    count = 0;
 }
 
 // Default constructor
-Tracer::Tracer() {
-    this->id = ++counter;
-    this->name = "obj_" + std::to_string(this->id);
+Tracer::Tracer()
+    : id(++count),
+    name("obj_" + std::to_string(id))
+{
     ++default_ctor;
     ++alive;
 }
 
 // Constructor with string argument
-Tracer::Tracer(const std::string& name) {
-    this->id = ++counter;
-    this->name = name + "_" + std::to_string(this->id);
+Tracer::Tracer(const std::string& name)
+    : id(++count),
+    name(name + "_" + std::to_string(id))
+{
     ++str_ctor;
     ++alive;
 }
 
 // Copy constructor
-Tracer::Tracer(const Tracer& other) :name(other.name) {
-    this->id = ++counter;
+Tracer::Tracer(const Tracer& other)
+    : id(++count),
+    name(other.name)
+{
     ++copy_ctor;
     ++alive;
 }
 
 // Move constructor
-Tracer::Tracer(Tracer&& other) noexcept :name(std::move(other.name)) {
-    this->id = ++counter;
+Tracer::Tracer(Tracer&& other) noexcept
+    : id(++count),
+    name(std::move(other.name))
+{
     ++move_ctor;
     ++alive;
 }
 
 // Copy assignment operator
-Tracer& operator=(const Tracer& other) {
-
+Tracer& Tracer::operator=(const Tracer& other) {
+    if(this != &other) {
+        name = other.name;
+        copy_assign++;
+    }
+    return *this;
 }
 
 // Move assignment operator
-Tracer& operator=(const Tracer& other) noexcept {
-    
+Tracer& Tracer::operator=(Tracer&& other) noexcept {
+    if(this != &other) {
+        name = std::move(other.name);
+        move_assign++;
+    }
+    return *this;
 }
 
 // Destructor
 Tracer::~Tracer() {
     ++dtor;
     --alive;
+}
+
+// Methods
+int Tracer::Id() const noexcept {
+    return id;
+}
+
+const std::string& Tracer::Name() const noexcept {
+    return name;
+}
+
+const char* Tracer::Data() const noexcept {
+    return name.c_str();
 }
